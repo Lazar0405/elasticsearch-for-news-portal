@@ -18,7 +18,7 @@ class ElasticsearchServiceProvider extends ServiceProvider{
 
         //publish SearchController
         $this->publishes([
-            __DIR__.'/News/Elasticsearch/Controllers/SearchController.php' => app_path('Http/Controllers/SearchController.php')
+            __DIR__.'/Controllers/SearchController.php' => app_path('Http/Controllers/SearchController.php')
         ], 'controller');
 
         if ($this->app->runningInConsole()) {
