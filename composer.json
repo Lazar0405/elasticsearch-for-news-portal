@@ -15,7 +15,8 @@
     ],
     "require": {
         "php": "^7.2|^8.0",
-        "babenkoivan/elastic-client": "^1.2|^2.1"
+        "babenkoivan/elastic-client": "^1.2|^2.1",
+        "http-interop/http-factory-guzzle": "^1.0"
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
