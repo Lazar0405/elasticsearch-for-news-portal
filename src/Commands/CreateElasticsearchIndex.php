@@ -12,7 +12,7 @@ use Illuminate\Support\Str;
 
 class CreateElasticsearchIndex extends Command
 {
-    protected $signature = 'elasticsearch:create-index-anewz';
+    protected $signature = 'elasticsearch:create-index';
     protected $description = 'Create Elasticsearch index for Articles and Article tags';
 
     protected $elasticsearch;
