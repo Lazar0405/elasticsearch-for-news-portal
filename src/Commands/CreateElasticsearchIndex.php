@@ -72,9 +72,9 @@ class CreateElasticsearchIndex extends Command
                                     ],
                                 ]
                             ],
-                            // 'image_f' => [
-                            //     'type' => 'keyword'
-                            // ],
+                            'image_m' => [
+                                'type' => 'keyword'
+                            ],
                             // 'image_kf' => [
                             //     'type' => 'keyword'
                             // ],
@@ -84,9 +84,9 @@ class CreateElasticsearchIndex extends Command
                             // 'image_xs' => [
                             //     'type' => 'keyword'
                             // ],
-                            // 'image_t' => [
-                            //     'type' => 'keyword'
-                            // ],
+                            'image_t' => [
+                                'type' => 'keyword'
+                            ],
                             'url' => [
                                 'type' => 'keyword'
                             ],
@@ -153,11 +153,11 @@ class CreateElasticsearchIndex extends Command
                                     'tags' => $output['tags'],
                                     'category' => $output['article']['category'],
                                     'subcategory' => $output['article']['subcategory'],
-                                    // 'image_f' => $output['article']['image_f'],
+                                    'image_m' => $output['article']['image_m'],
                                     // 'image_kf' => $output['article']['image_kf'],
                                     'image_ig' => $output['article']['image_ig'],
                                     // 'image_s' => $output['article']['image_s'],
-                                    // 'image_t' => $output['article']['image_t'],
+                                    'image_t' => $output['article']['image_t'],
                                     'url' => $output['article']['url'],
                                     'publish_at' => $output['article']['publish_at'],
                                     'time_created' => $output['article']['time_created'],
@@ -224,9 +224,9 @@ class CreateElasticsearchIndex extends Command
                                     ],
                                 ]
                             ],
-                            // 'image_f' => [
-                            //     'type' => 'keyword'
-                            // ],
+                            'image_m' => [
+                                'type' => 'keyword'
+                            ],
                             // 'image_kf' => [
                             //     'type' => 'keyword'
                             // ],
@@ -236,9 +236,9 @@ class CreateElasticsearchIndex extends Command
                             // 'image_xs' => [
                             //     'type' => 'keyword'
                             // ],
-                            // 'image_t' => [
-                            //     'type' => 'keyword'
-                            // ],
+                            'image_t' => [
+                                'type' => 'keyword'
+                            ],
                             'url' => [
                                 'type' => 'keyword'
                             ],
@@ -303,11 +303,11 @@ class CreateElasticsearchIndex extends Command
                                     'lead' => $output['article']['lead'],
                                     'category' => $output['article']['category'],
                                     'subcategory' => $output['article']['subcategory'],
-                                    // 'image_f' => $output['article']['image_f'],
+                                    'image_m' => $output['article']['image_m'],
                                     // 'image_kf' => $output['article']['image_kf'],
                                     'image_ig' => $output['article']['image_ig'],
                                     // 'image_s' => $output['article']['image_s'],
-                                    // 'image_t' => $output['article']['image_t'],
+                                    'image_t' => $output['article']['image_t'],
                                     'url' => $output['article']['url'],
                                     'publish_at' => $output['article']['publish_at'],
                                     'time_created' => $output['article']['time_created'],
@@ -364,10 +364,10 @@ class CreateElasticsearchIndex extends Command
                 'name' => $subcategoryName,
                 'url' => $subcategoryUrl
             ],
-            'image_f' => $article->image_f,
-            'image_kf' => $article->image_kf,
+            'image_m' => $article->image_m,
+            // 'image_kf' => $article->image_kf,
             'image_ig' => $article->image_ig,
-            'image_xs' => $article->image_xs,
+            // 'image_xs' => $article->image_xs,
             'image_t' => $article->image_t,
             'url' => $articleUrl,
             'time_created' => strtotime($article->time_created),

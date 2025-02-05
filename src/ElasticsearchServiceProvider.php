@@ -28,7 +28,7 @@ class ElasticsearchServiceProvider extends ServiceProvider{
             ]);
         }
         
-        if(config('elasticsearch.run_observer') == true) {
+        if(config('elasticsearch.run_observer')) {
             $className = config('elasticsearch.article_model');
             if (class_exists($className)) { 
                 $className::observe(ArticleObserver::class); 

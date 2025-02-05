@@ -55,7 +55,8 @@ class UpdateElasticsearchIndex extends Command
             $article = Article::find($id);
             if(isset($article) && !empty($article)) {
 
-                if(config('elasticsearch.include_tags_in_search') == true) {
+                if(config('elasticsearch.include_tags_in_search')) {
+
                     $output['article'] = self::dataNormalization($article);
                     $output['tags'] = $article->tags->pluck('title')->toArray();
         
@@ -70,11 +71,11 @@ class UpdateElasticsearchIndex extends Command
                             'tags' => $output['tags'],
                             'category' => $output['article']['category'],
                             'subcategory' => $output['article']['subcategory'],
-                            // 'image_f' => $output['article']['image_f'],
+                            'image_m' => $output['article']['image_m'],
                             // 'image_kf' => $output['article']['image_kf'],
                             'image_ig' => $output['article']['image_ig'],
                             // 'image_xs' => $output['article']['image_xs'],
-                            // 'image_t' => $output['article']['image_t'],
+                            'image_t' => $output['article']['image_t'],
                             'url' => $output['article']['url'],
                             'time_created_real' => $output['article']['time_created_real'],
                             'time_updated_real' => $output['article']['time_updated_real'],
@@ -100,11 +101,11 @@ class UpdateElasticsearchIndex extends Command
                             'lead' => $output['article']['lead'],
                             'category' => $output['article']['category'],
                             'subcategory' => $output['article']['subcategory'],
-                            // 'image_f' => $output['article']['image_f'],
+                            'image_m' => $output['article']['image_m'],
                             // 'image_kf' => $output['article']['image_kf'],
                             'image_ig' => $output['article']['image_ig'],
                             // 'image_xs' => $output['article']['image_xs'],
-                            // 'image_t' => $output['article']['image_t'],
+                            'image_t' => $output['article']['image_t'],
                             'url' => $output['article']['url'],
                             'time_created_real' => $output['article']['time_created_real'],
                             'time_updated_real' => $output['article']['time_updated_real'],
@@ -153,11 +154,11 @@ class UpdateElasticsearchIndex extends Command
                                 'tags' => $output['tags'],
                                 'category' => $output['article']['category'],
                                 'subcategory' => $output['article']['subcategory'],
-                                // 'image_f' => $output['article']['image_f'],
+                                'image_m' => $output['article']['image_m'],
                                 // 'image_kf' => $output['article']['image_kf'],
                                 'image_ig' => $output['article']['image_ig'],
                                 // 'image_xs' => $output['article']['image_xs'],
-                                // 'image_t' => $output['article']['image_t'],
+                                'image_t' => $output['article']['image_t'],
                                 'url' => $output['article']['url'],
                                 'time_created_real' => $output['article']['time_created_real'],
                                 'time_updated_real' => $output['article']['time_updated_real'],
@@ -186,11 +187,11 @@ class UpdateElasticsearchIndex extends Command
                                 'lead' => $output['article']['lead'],
                                 'category' => $output['article']['category'],
                                 'subcategory' => $output['article']['subcategory'],
-                                // 'image_f' => $output['article']['image_f'],
+                                'image_m' => $output['article']['image_m'],
                                 // 'image_kf' => $output['article']['image_kf'],
                                 'image_ig' => $output['article']['image_ig'],
                                 // 'image_xs' => $output['article']['image_xs'],
-                                // 'image_t' => $output['article']['image_t'],
+                                'image_t' => $output['article']['image_t'],
                                 'url' => $output['article']['url'],
                                 'time_created_real' => $output['article']['time_created_real'],
                                 'time_updated_real' => $output['article']['time_updated_real'],
@@ -267,11 +268,11 @@ class UpdateElasticsearchIndex extends Command
                 'name' => $subcategoryName,
                 'url' => $subcategoryUrl
             ],
-            // 'image_f' => $article->image_f,
+            'image_m' => $article->image_m,
             // 'image_kf' => $article->image_kf,
             'image_ig' => $article->image_ig,
             // 'image_xs' => $article->image_xs,
-            // 'image_t' => $article->image_t,
+            'image_t' => $article->image_t,
             'url' => $articleUrl,
             'time_created_real' => strtotime($article->time_created_real),
             'time_updated_real' => strtotime($article->time_updated_real),
