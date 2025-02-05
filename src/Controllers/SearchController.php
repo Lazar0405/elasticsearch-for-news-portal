@@ -3,7 +3,7 @@
 namespace News\Elasticsearch\Controllers;
 
 use App\Repositories\ArticleRepository;
-use Elasticsearch\ClientBuilder;
+use Elastic\Elasticsearch\ClientBuilder;
 use App\Http\Controllers\Controller;
 
 class SearchController extends Controller
