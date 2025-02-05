@@ -168,8 +168,6 @@ class CreateElasticsearchIndex extends Command
                                     'comments_count' => $output['article']['comments_count'],
                                     'has_video' => $output['article']['has_video'],
                                     'published' => $output['article']['published'],
-                                    'external_link' => $output['article']['external_link'],
-                                    'keywords' => $output['article']['keywords'],
                                 ],
                             ];
                             
