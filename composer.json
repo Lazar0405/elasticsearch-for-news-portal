@@ -1,0 +1,29 @@
+{
+    "name": "lazar/elastic",
+    "description": "elasticsearch for news portals",
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "News\\Elasticsearch\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Lazar Tanaskovic",
+            "email": "lazar.tanaskovic@cubes.rs"
+        }
+    ],
+    "require": {
+        "php": "^7.2|^8.0",
+        "babenkoivan/elastic-client": "^1.2|^2.1"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "extra": {
+        "laravel": {
+            "providers":[
+                "News\\Elasticsearch\\ElasticsearchServiceProvider"
+            ]
+        }
+    }
+}
