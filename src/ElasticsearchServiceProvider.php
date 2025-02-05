@@ -7,7 +7,7 @@ use News\Elasticsearch\Commands\CreateElasticsearchIndex;
 use News\Elasticsearch\Commands\UpdateElasticsearchIndex;
 use News\Elasticsearch\Observers\ArticleObserver;
 
-class NewsRecommendationServiceProvider extends ServiceProvider{
+class ElasticsearchServiceProvider extends ServiceProvider{
 
     public function boot(){
 
