@@ -1,6 +1,6 @@
 <?php
 
-namespace News\Elasticsearch\Commands;
+namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Elastic\Elasticsearch\ClientBuilder;

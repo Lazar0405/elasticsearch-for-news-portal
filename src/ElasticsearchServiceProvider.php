@@ -3,8 +3,6 @@
 namespace News\Elasticsearch;
 
 use Illuminate\Support\ServiceProvider;
-use News\Elasticsearch\Commands\CreateElasticsearchIndex;
-use News\Elasticsearch\Commands\UpdateElasticsearchIndex;
 use News\Elasticsearch\Observers\ArticleObserver;
 
 class ElasticsearchServiceProvider extends ServiceProvider{
@@ -21,12 +19,18 @@ class ElasticsearchServiceProvider extends ServiceProvider{
             __DIR__.'/Controllers/SearchController.php' => app_path('Http/Controllers/SearchController.php')
         ], 'controller');
 
-        if ($this->app->runningInConsole()) {
-            $this->commands([
-                CreateElasticsearchIndex::class,
-                UpdateElasticsearchIndex::class
-            ]);
-        }
+        //publish SearchController
+        $this->publishes([
+            __DIR__.'/Commands/CreateElasticsearchIndex.php' => app_path('Console/Commands/CreateElasticsearchIndex.php'),
+            __DIR__.'/Commands/UpdateElasticsearchIndex.php' => app_path('Console/Commands/UpdateElasticsearchIndex.php')
+        ], 'commands');
+
+        // if ($this->app->runningInConsole()) {
+        //     $this->commands([
+        //         CreateElasticsearchIndex::class,
+        //         UpdateElasticsearchIndex::class
+        //     ]);
+        // }
         
         if(config('elasticsearch.run_observer')) {
             $className = config('elasticsearch.article_model');
