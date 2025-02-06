@@ -66,13 +66,14 @@ class SearchController extends Controller
             $page = 1;
         }
 
+        // if the current page is bigger than the 500, then we will set the last page to be 500 
         if($page > 500) {
             $page = 500;
         }
 
         try {
 
-            $size = 20;
+            $size = config('elasticsearch.articles_per_page');
             $from = ($page - 1) * $size;
 
             if(config('elasticsearch.include_tags_in_search')) {
@@ -206,13 +207,14 @@ class SearchController extends Controller
             $results = $this->elasticsearch->search($params);
             $total = $results['hits']['total']['value'];
 
+            //pagination (modify depending on the project)
             $paginationParams = ArticleRepository::paginationParams($total, $size, $page);
             $lastPage = $paginationParams['last_page'];
             $page = $paginationParams['page'];
             $from = $paginationParams['offset'];
             $hasMorePages = $paginationParams['has_more_pages'];
 
-            //ako je trenutni page veci od poslednje stranice onda cemo setovati da trenutni page bude poslednja stranica
+            //if the current page is bigger than the last page, then we will set the current page to be the last page
             if($page > $lastPage) {
                 $page = $lastPage;
             }
@@ -226,10 +228,12 @@ class SearchController extends Controller
                 'per_page' => $size
             ];
 
+            //final data with articles and pagination
             $data = [
                 'results' => $results['hits']['hits'],
                 'pagination' => $pagination
             ];
+
         } catch (Exception $e) {
             Log::error('Elasticsearch filed: ' . $e->getMessage());
         }

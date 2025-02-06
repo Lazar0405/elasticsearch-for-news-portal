@@ -2,13 +2,14 @@
 
 return [
 
-    'main_site_url' => 'http://newsmax.local:2020/',
-    'elasticsearch_host' => 'http://elasticsearch:9200',
-    'elasticsearch_index' => 'articles_search_test',
-    'elasticsearch_username' => 'elastic',
-    'elasticsearch_password' => 'elastic',
+    'main_site_url' => '',
+    'elasticsearch_host' => '',
+    'elasticsearch_index' => '',
+    'elasticsearch_username' => '',
+    'elasticsearch_password' => '',
 
     'article_model' => \App\Models\Article::class,
+    'articles_per_page' => 20,
 
     'run_observer' => false,
     'include_tags_in_search' => false
