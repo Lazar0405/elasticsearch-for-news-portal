@@ -3,10 +3,11 @@
 return [
 
     'main_site_url' => '',
-    'elasticsearch_host' => '',
     'elasticsearch_index' => '',
-    'elasticsearch_username' => '',
-    'elasticsearch_password' => '',
+    //default options
+    'elasticsearch_host' => 'http://elasticsearch:9200',
+    'elasticsearch_username' => 'elastic',
+    'elasticsearch_password' => 'elastic',
 
     'article_model' => \App\Models\Article::class,
     'articles_per_page' => 20,

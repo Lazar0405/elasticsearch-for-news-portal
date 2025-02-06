@@ -19,10 +19,7 @@ class UpdateElasticsearchIndex extends Command
     public function __construct()
     {
         parent::__construct();
-        $this->elasticsearch = ClientBuilder::create()
-            ->setBasicAuthentication(config('elasticsearch.elasticsearch_username'), config('elasticsearch.elasticsearch_password'))
-            ->setHosts([config('elasticsearch.elasticsearch_host')])->setSSLVerification(false)
-            ->build();
+        $this->elasticsearch = ClientBuilder::create()->setBasicAuthentication(config('elasticsearch.elasticsearch_username'), config('elasticsearch.elasticsearch_password'))->setHosts([config('elasticsearch.elasticsearch_host')])->setSSLVerification(false)->build();
     }
 
     public function handle()
