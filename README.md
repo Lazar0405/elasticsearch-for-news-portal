@@ -16,3 +16,37 @@ Also, if you want to enable search by tag, you can do so by setting the key "inc
 ## Front
 Adjust the config file depending on the config file from the CMS.
 Customize the view blade based on the data you get from the controller.
+If your portal is 
+
+## Enabling Search for Serbian Special Characters
+If your portal is in the Serbian language and you want to include special characters such as Č, Ć, Š, Ž, Đ in the search functionality, you need to add the following configuration to the index at the beginning of the index body:
+```php
+        'settings' => [
+            'analysis' => [
+                'filter' => [
+                    'serbian_folding' => [
+                        'type' => 'asciifolding', // Converts diacritical characters
+                        'preserve_original' => true
+                    ]
+                ],
+                'analyzer' => [
+                    'serbian_analyzer' => [
+                        'type' => 'custom',
+                        'tokenizer' => 'standard',
+                        'filter' => ['lowercase', 'serbian_folding']
+                    ]
+                ]
+            ]
+        ],
+```
+
+For each field you want to search by, add 'analyzer' => 'serbian_analyzer'. For example, if you're searching by title, it would look like this:
+
+```php
+        'heading' => [
+            'type' => 'text',
+            'analyzer' => 'serbian_analyzer'
+        ],
+```
+
+This will ensure that Serbian diacritical characters are properly handled in the search functionality of your portal.
