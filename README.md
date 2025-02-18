@@ -6,8 +6,9 @@ If Front and CMS are separate projects, the installation procedure is as follows
 3. Set up config/elasticsearch.php (on both projects)
 4. php artisan vendor:publish --tag=controller --provider="News\Elasticsearch\ElasticsearchServiceProvider" (front)
 5. php artisan vendor:publish --tag=commands --provider="News\Elasticsearch\ElasticsearchServiceProvider" (cms)
-6. Register the Observer in AppServiceProvider.php (cms)
-7. Use Package :D
+6. Use Package :D
+
+
 
 ## CMS
 The console command to create the index is run manually.

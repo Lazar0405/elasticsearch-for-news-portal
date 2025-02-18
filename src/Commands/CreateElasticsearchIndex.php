@@ -26,312 +26,176 @@ class CreateElasticsearchIndex extends Command
 
     public function handle()
     {
-        $this->info('Indexing all articles...');
 
-        if(config('elasticsearch.include_tags_in_search')) {
+        $indexName = config('elasticsearch.elasticsearch_index');
 
-            $params = [
-                'index' => config('elasticsearch.elasticsearch_index'),
-                'body'  => [
-                    'mappings' => [
-                        'properties' => [
-                            'id' => [
-                                'type' => 'integer'
-                            ],
-                            'heading' => [
-                                'type' => 'text'
-                            ],
-                            'preheading' => [
-                                'type' => 'text'
-                            ],
-                            'lead' => [
-                                'type' => 'text'
-                            ],
-                            'tags' => [
-                                'type' => 'text'
-                            ],
-                            'category' => [
-                                'type' => 'nested',
-                                'properties' => [
-                                    'name' => [
-                                        'type' => 'text'
-                                    ],
-                                    'url' => [
-                                        'type' => 'keyword'
-                                    ],
-                                ]
-                            ],
-                            'subcategory' => [
-                                'type' => 'nested',
-                                'properties' => [
-                                    'name' => [
-                                        'type' => 'text'
-                                    ],
-                                    'url' => [
-                                        'type' => 'keyword'
-                                    ],
-                                ]
-                            ],
-                            'image_m' => [
-                                'type' => 'keyword'
-                            ],
-                            // 'image_kf' => [
-                            //     'type' => 'keyword'
-                            // ],
-                            'image_ig' => [
-                                'type' => 'keyword'
-                            ],
-                            // 'image_xs' => [
-                            //     'type' => 'keyword'
-                            // ],
-                            'image_t' => [
-                                'type' => 'keyword'
-                            ],
-                            'url' => [
-                                'type' => 'keyword'
-                            ],
-                            'time_created' => [
-                                'type' => 'date'
-                            ],
-                            'time_created_real' => [
-                                'type' => 'date'
-                            ],
-                            'time_updated_real' => [
-                                'type' => 'date'
-                            ],
-                            'time_changed' => [
-                                'type' => 'date'
-                            ],
-                            'publish_at' => [
-                                'type' => 'date'
-                            ],
-                            'comments' => [
-                                'type' => 'integer'
-                            ],
-                            'comments_count' => [
-                                'type' => 'integer'
-                            ],
-                            'has_video' => [
-                                'type' => 'integer'
-                            ],
-                            'published' => [
-                                'type' => 'integer'
-                            ],
-                        ]
-                    ]
-                ]
-            ];
-
-            try {
-
-                //if index alredy exists, delete index and create new one
-                if ($this->elasticsearch->indices()->exists(['index' => config('elasticsearch.elasticsearch_index')])) {
-                    $this->elasticsearch->indices()->delete(['index' => config('elasticsearch.elasticsearch_index')]);
-                }
-    
-                // Create the index
-                $this->elasticsearch->indices()->create($params);
-    
-                // Fetch all articles with their tags
-                Article::with('tags')->where('published', 1)->orderBy('publish_at', 'desc')->where('deleted_at', null)->chunk(5000, function ($articles) {
-    
-                    if (isset($articles) && !empty($articles)) {
-    
-                        foreach ($articles as $article) {
-    
-                            $output['article'] = self::dataNormalization($article);
-                            $output['tags'] = $article->tags->pluck('title')->toArray();
-    
-                            $params = [
-                                'index' => config('elasticsearch.elasticsearch_index'),
-                                'id'    => 'article_' . $output['article']['id'],
-                                'body'  => [
-                                    'id'    => $output['article']['id'],
-                                    'heading' => $output['article']['heading'],
-                                    'preheading' => $output['article']['preheading'],
-                                    'lead' => $output['article']['lead'],
-                                    'tags' => $output['tags'],
-                                    'category' => $output['article']['category'],
-                                    'subcategory' => $output['article']['subcategory'],
-                                    'image_m' => $output['article']['image_m'],
-                                    // 'image_kf' => $output['article']['image_kf'],
-                                    'image_ig' => $output['article']['image_ig'],
-                                    // 'image_s' => $output['article']['image_s'],
-                                    'image_t' => $output['article']['image_t'],
-                                    'url' => $output['article']['url'],
-                                    'publish_at' => $output['article']['publish_at'],
-                                    'time_created' => $output['article']['time_created'],
-                                    'time_created_real' => $output['article']['time_created_real'],
-                                    'time_updated_real' => $output['article']['time_updated_real'],
-                                    'time_changed' => $output['article']['time_changed'],
-                                    'comments' => $output['article']['comments'],
-                                    'comments_count' => $output['article']['comments_count'],
-                                    'has_video' => $output['article']['has_video'],
-                                    'published' => $output['article']['published'],
-                                ],
-                            ];
-                            
-                            $this->elasticsearch->index($params);
-                        }
-                    }
-                });
-                $this->info('Elasticsearch index created and populated successfully.');
-            } catch (Exception $e) {
-                Log::error("Elasticsearch index failed to created: " . $e->getMessage());
-                $this->info('Elasticsearch index failed to created, check log.');
-            }
-
-        } else {
-
-            $params = [
-                'index' => config('elasticsearch.elasticsearch_index'),
-                'body'  => [
-                    'mappings' => [
-                        'properties' => [
-                            'id' => [
-                                'type' => 'integer'
-                            ],
-                            'heading' => [
-                                'type' => 'text'
-                            ],
-                            'preheading' => [
-                                'type' => 'text'
-                            ],
-                            'lead' => [
-                                'type' => 'text'
-                            ],
-                            'category' => [
-                                'type' => 'nested',
-                                'properties' => [
-                                    'name' => [
-                                        'type' => 'text'
-                                    ],
-                                    'url' => [
-                                        'type' => 'keyword'
-                                    ],
-                                ]
-                            ],
-                            'subcategory' => [
-                                'type' => 'nested',
-                                'properties' => [
-                                    'name' => [
-                                        'type' => 'text'
-                                    ],
-                                    'url' => [
-                                        'type' => 'keyword'
-                                    ],
-                                ]
-                            ],
-                            'image_m' => [
-                                'type' => 'keyword'
-                            ],
-                            // 'image_kf' => [
-                            //     'type' => 'keyword'
-                            // ],
-                            'image_ig' => [
-                                'type' => 'keyword'
-                            ],
-                            // 'image_xs' => [
-                            //     'type' => 'keyword'
-                            // ],
-                            'image_t' => [
-                                'type' => 'keyword'
-                            ],
-                            'url' => [
-                                'type' => 'keyword'
-                            ],
-                            'time_created' => [
-                                'type' => 'date'
-                            ],
-                            'time_created_real' => [
-                                'type' => 'date'
-                            ],
-                            'time_updated_real' => [
-                                'type' => 'date'
-                            ],
-                            'time_changed' => [
-                                'type' => 'date'
-                            ],
-                            'publish_at' => [
-                                'type' => 'date'
-                            ],
-                            'comments' => [
-                                'type' => 'integer'
-                            ],
-                            'comments_count' => [
-                                'type' => 'integer'
-                            ],
-                            'has_video' => [
-                                'type' => 'integer'
-                            ],
-                            'published' => [
-                                'type' => 'integer'
-                            ],
-                        ]
-                    ]
-                ]
-            ];
-
-            try {
-
-                //if index alredy exists, delete index and create new one
-                if ($this->elasticsearch->indices()->exists(['index' => config('elasticsearch.elasticsearch_index')])) {
-                    $this->elasticsearch->indices()->delete(['index' => config('elasticsearch.elasticsearch_index')]);
-                }
-    
-                // Create the index
-                $this->elasticsearch->indices()->create($params);
-    
-                // Fetch all articles without their tags
-                Article::where('published', 1)->orderBy('publish_at', 'desc')->where('deleted_at', null)->chunk(5000, function ($articles) {
-    
-                    if (isset($articles) && !empty($articles)) {
-    
-                        foreach ($articles as $article) {
-    
-                            $output['article'] = self::dataNormalization($article);
-    
-                            $params = [
-                                'index' => config('elasticsearch.elasticsearch_index'),
-                                'id'    => 'article_' . $output['article']['id'],
-                                'body'  => [
-                                    'id'    => $output['article']['id'],
-                                    'heading' => $output['article']['heading'],
-                                    'preheading' => $output['article']['preheading'],
-                                    'lead' => $output['article']['lead'],
-                                    'category' => $output['article']['category'],
-                                    'subcategory' => $output['article']['subcategory'],
-                                    'image_m' => $output['article']['image_m'],
-                                    // 'image_kf' => $output['article']['image_kf'],
-                                    'image_ig' => $output['article']['image_ig'],
-                                    // 'image_s' => $output['article']['image_s'],
-                                    'image_t' => $output['article']['image_t'],
-                                    'url' => $output['article']['url'],
-                                    'publish_at' => $output['article']['publish_at'],
-                                    'time_created' => $output['article']['time_created'],
-                                    'time_created_real' => $output['article']['time_created_real'],
-                                    'time_updated_real' => $output['article']['time_updated_real'],
-                                    'time_changed' => $output['article']['time_changed'],
-                                    'comments' => $output['article']['comments'],
-                                    'comments_count' => $output['article']['comments_count'],
-                                    'has_video' => $output['article']['has_video'],
-                                    'published' => $output['article']['published'],
-                                ],
-                            ];
-                            
-                            $this->elasticsearch->index($params);
-                        }
-                    }
-                });
-
-                $this->info('Elasticsearch index created and populated successfully.');
-            } catch (Exception $e) {
-                Log::error("Elasticsearch index failed to created: " . $e->getMessage());
-                $this->info('Elasticsearch index failed to created, check log.');
-            }
-
+        // Check if the index exists
+        if (!$this->indexExists($indexName)) {
+            $this->createIndex($indexName);
         }
+
+        $this->fillIndexWithData($indexName);
+
+        $this->info("Index '$indexName' created and filled successfully.");
+    }
+
+    protected function createIndex(string $indexName): void
+    {
+        $this->info("Creating index '$indexName'...");
+
+        $params = [
+            'index' => $indexName,
+            'body'  => [
+                'mappings' => [
+                    'properties' => [
+                        'id' => [
+                            'type' => 'integer'
+                        ],
+                        'heading' => [
+                            'type' => 'text'
+                        ],
+                        'preheading' => [
+                            'type' => 'text'
+                        ],
+                        'lead' => [
+                            'type' => 'text'
+                        ],
+                        'tags' => [
+                            'type' => 'text'
+                        ],
+                        'category' => [
+                            'type' => 'nested',
+                            'properties' => [
+                                'name' => [
+                                    'type' => 'text'
+                                ],
+                                'url' => [
+                                    'type' => 'keyword'
+                                ],
+                            ]
+                        ],
+                        'subcategory' => [
+                            'type' => 'nested',
+                            'properties' => [
+                                'name' => [
+                                    'type' => 'text'
+                                ],
+                                'url' => [
+                                    'type' => 'keyword'
+                                ],
+                            ]
+                        ],
+                        'image_m' => [
+                            'type' => 'keyword'
+                        ],
+                        // 'image_kf' => [
+                        //     'type' => 'keyword'
+                        // ],
+                        'image_ig' => [
+                            'type' => 'keyword'
+                        ],
+                        // 'image_xs' => [
+                        //     'type' => 'keyword'
+                        // ],
+                        'image_t' => [
+                            'type' => 'keyword'
+                        ],
+                        'url' => [
+                            'type' => 'keyword'
+                        ],
+                        'time_created' => [
+                            'type' => 'date'
+                        ],
+                        'time_created_real' => [
+                            'type' => 'date'
+                        ],
+                        'time_updated_real' => [
+                            'type' => 'date'
+                        ],
+                        'time_changed' => [
+                            'type' => 'date'
+                        ],
+                        'publish_at' => [
+                            'type' => 'date'
+                        ],
+                        'comments' => [
+                            'type' => 'integer'
+                        ],
+                        'comments_count' => [
+                            'type' => 'integer'
+                        ],
+                        'has_video' => [
+                            'type' => 'integer'
+                        ],
+                        'published' => [
+                            'type' => 'integer'
+                        ],
+                    ]
+                ]
+            ]
+        ];
+
+        $this->elasticsearch->indices()->create($params);
+        $this->info("Index '$indexName' created.");
+    }
+
+    protected function fillIndexWithData(string $indexName): void
+    {
         
+        try {
+            // Fetch all articles with their tags
+            Article::with('tags')->where('published', 1)->orderBy('publish_at', 'desc')->where('deleted_at', null)->chunk(5000, function ($articles) use ($indexName) {
+
+                if (isset($articles) && !empty($articles)) {
+
+                    foreach ($articles as $article) {
+
+                        $output['article'] = self::dataNormalization($article);
+                        $output['tags'] = $article->tags->pluck('title')->toArray();
+
+                        $params = [
+                            'index' => $indexName,
+                            'id'    => 'article_' . $output['article']['id'],
+                            'body'  => [
+                                'id'    => $output['article']['id'],
+                                'heading' => $output['article']['heading'],
+                                'preheading' => $output['article']['preheading'],
+                                'lead' => $output['article']['lead'],
+                                'tags' => $output['tags'],
+                                'category' => $output['article']['category'],
+                                'subcategory' => $output['article']['subcategory'],
+                                'image_m' => $output['article']['image_m'],
+                                // 'image_kf' => $output['article']['image_kf'],
+                                'image_ig' => $output['article']['image_ig'],
+                                // 'image_s' => $output['article']['image_s'],
+                                'image_t' => $output['article']['image_t'],
+                                'url' => $output['article']['url'],
+                                'publish_at' => $output['article']['publish_at'],
+                                'time_created' => $output['article']['time_created'],
+                                'time_created_real' => $output['article']['time_created_real'],
+                                'time_updated_real' => $output['article']['time_updated_real'],
+                                'time_changed' => $output['article']['time_changed'],
+                                'comments' => $output['article']['comments'],
+                                'comments_count' => $output['article']['comments_count'],
+                                'has_video' => $output['article']['has_video'],
+                                'published' => $output['article']['published'],
+                            ],
+                        ];
+
+                        $this->elasticsearch->index($params);
+                    }
+                }
+            });
+        } catch (Exception $e) {
+            Log::error("Elasticsearch index failed to created: " . $e->getMessage());
+            $this->info('Elasticsearch index failed to created, check log.');
+        }
+    }
+
+    protected function indexExists(string $indexName): bool
+    {
+        $response = $this->elasticsearch->indices()->exists(['index' => $indexName]);
+        return $response->getStatusCode() === 200;
     }
 
     public function dataNormalization($article)
