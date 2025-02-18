@@ -19,7 +19,7 @@ class ElasticsearchServiceProvider extends ServiceProvider{
             __DIR__.'/Controllers/SearchController.php' => app_path('Http/Controllers/SearchController.php')
         ], 'controller');
 
-        //publish SearchController
+        //publish console commands for creating and updating index
         $this->publishes([
             __DIR__.'/Commands/CreateElasticsearchIndex.php' => app_path('Console/Commands/CreateElasticsearchIndex.php'),
             __DIR__.'/Commands/UpdateElasticsearchIndex.php' => app_path('Console/Commands/UpdateElasticsearchIndex.php')
