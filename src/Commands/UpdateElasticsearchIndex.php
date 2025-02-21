@@ -52,15 +52,64 @@ class UpdateElasticsearchIndex extends Command
             $article = Article::find($id);
             if(isset($article) && !empty($article)) {
 
-                if(config('elasticsearch.include_tags_in_search')) {
+                $output['article'] = self::dataNormalization($article);
+                $output['tags'] = $article->tags->pluck('title')->toArray();
+    
+                $params = [
+                    'index' => config('elasticsearch.elasticsearch_index'),
+                    'id'    => 'article_' . $output['article']['id'],
+                    'body'  => [ // Korišćenje 'body', a ne 'doc'
+                        'id'    => $output['article']['id'],
+                        'heading' => $output['article']['heading'],
+                        'preheading' => $output['article']['preheading'],
+                        'lead' => $output['article']['lead'],
+                        'tags' => $output['tags'],
+                        'category' => $output['article']['category'],
+                        'subcategory' => $output['article']['subcategory'],
+                        'image_m' => $output['article']['image_m'],
+                        // 'image_kf' => $output['article']['image_kf'],
+                        'image_ig' => $output['article']['image_ig'],
+                        // 'image_xs' => $output['article']['image_xs'],
+                        'image_t' => $output['article']['image_t'],
+                        'url' => $output['article']['url'],
+                        'time_created_real' => $output['article']['time_created_real'],
+                        'time_updated_real' => $output['article']['time_updated_real'],
+                        'time_changed' => $output['article']['time_changed'],
+                        'publish_at' => $output['article']['publish_at'],
+                        'comments' => $output['article']['comments'],
+                        'comments_count' => $output['article']['comments_count'],
+                        'has_video' => $output['article']['has_video'],
+                        'published' => $output['article']['published'],
+                    ],
+                ];
+                
+                $this->elasticsearch->index($params); 
+                $this->info("Elasticsearch index added successfully for article ID = $id");
+            }else {
+                $this->error("Article with ID = $id not found.");
+            }
+        } catch (\Exception $e) {
+            Log::error('Failed to add Elasticsearch index for article ID = ' . $id . '. Error: ' . $e->getMessage());
+            $this->error("Failed to add to Elasticsearch index. Check logs for details.");
+        }
+    }
+    
 
-                    $output['article'] = self::dataNormalization($article);
-                    $output['tags'] = $article->tags->pluck('title')->toArray();
-        
-                    $params = [
-                        'index' => config('elasticsearch.elasticsearch_index'),
-                        'id'    => 'article_' . $output['article']['id'],
-                        'body'  => [ // Korišćenje 'body', a ne 'doc'
+    protected function updateIndex($id)
+    {
+        try {
+            $article = Article::where('id', $id)->first();
+
+            if (isset($article) && !empty($article)) {
+
+                $output['article'] = self::dataNormalization($article);
+                $output['tags'] = $article->tags->pluck('title')->toArray();
+
+                $params = [
+                    'index' => config('elasticsearch.elasticsearch_index'),
+                    'id'    => 'article_' . $output['article']['id'],
+                    'body'  => [
+                        'doc' => [
                             'id'    => $output['article']['id'],
                             'heading' => $output['article']['heading'],
                             'preheading' => $output['article']['preheading'],
@@ -83,135 +132,18 @@ class UpdateElasticsearchIndex extends Command
                             'has_video' => $output['article']['has_video'],
                             'published' => $output['article']['published'],
                         ],
-                    ];
-                }else {
-
-                    $output['article'] = self::dataNormalization($article);
-        
-                    $params = [
-                        'index' => config('elasticsearch.elasticsearch_index'),
-                        'id'    => 'article_' . $output['article']['id'],
-                        'body'  => [ 
-                            'id'    => $output['article']['id'],
-                            'heading' => $output['article']['heading'],
-                            'preheading' => $output['article']['preheading'],
-                            'lead' => $output['article']['lead'],
-                            'category' => $output['article']['category'],
-                            'subcategory' => $output['article']['subcategory'],
-                            'image_m' => $output['article']['image_m'],
-                            // 'image_kf' => $output['article']['image_kf'],
-                            'image_ig' => $output['article']['image_ig'],
-                            // 'image_xs' => $output['article']['image_xs'],
-                            'image_t' => $output['article']['image_t'],
-                            'url' => $output['article']['url'],
-                            'time_created_real' => $output['article']['time_created_real'],
-                            'time_updated_real' => $output['article']['time_updated_real'],
-                            'time_changed' => $output['article']['time_changed'],
-                            'publish_at' => $output['article']['publish_at'],
-                            'comments' => $output['article']['comments'],
-                            'comments_count' => $output['article']['comments_count'],
-                            'has_video' => $output['article']['has_video'],
-                            'published' => $output['article']['published'],
-                        ],
-                    ];
-
-                }
-    
-                $this->elasticsearch->index($params); 
-                $this->info("Elasticsearch index added successfully for article ID: $id");
-            }
-        } catch (\Exception $e) {
-            Log::error("Failed to add to Elasticsearch index for article ID: $id. Error: " . $e->getMessage());
-            $this->error("Failed to add to Elasticsearch index. Check logs for details.");
-        }
-    }
-    
-
-    protected function updateIndex($id)
-    {
-        try {
-            $article = Article::where('id', $id)->first();
-
-            if (isset($article) && !empty($article)) {
-
-                if(config('elasticsearch.include_tags_in_search') == true) {
-
-                    $output['article'] = self::dataNormalization($article);
-                    $output['tags'] = $article->tags->pluck('title')->toArray();
-
-                    $params = [
-                        'index' => config('elasticsearch.elasticsearch_index'),
-                        'id'    => 'article_' . $output['article']['id'],
-                        'body'  => [
-                            'doc' => [
-                                'id'    => $output['article']['id'],
-                                'heading' => $output['article']['heading'],
-                                'preheading' => $output['article']['preheading'],
-                                'lead' => $output['article']['lead'],
-                                'tags' => $output['tags'],
-                                'category' => $output['article']['category'],
-                                'subcategory' => $output['article']['subcategory'],
-                                'image_m' => $output['article']['image_m'],
-                                // 'image_kf' => $output['article']['image_kf'],
-                                'image_ig' => $output['article']['image_ig'],
-                                // 'image_xs' => $output['article']['image_xs'],
-                                'image_t' => $output['article']['image_t'],
-                                'url' => $output['article']['url'],
-                                'time_created_real' => $output['article']['time_created_real'],
-                                'time_updated_real' => $output['article']['time_updated_real'],
-                                'time_changed' => $output['article']['time_changed'],
-                                'publish_at' => $output['article']['publish_at'],
-                                'comments' => $output['article']['comments'],
-                                'comments_count' => $output['article']['comments_count'],
-                                'has_video' => $output['article']['has_video'],
-                                'published' => $output['article']['published'],
-                            ],
-                            'doc_as_upsert' => true
-                        ]
-                    ];
-                }else {
-
-                    $output['article'] = self::dataNormalization($article);
-
-                    $params = [
-                        'index' => config('elasticsearch.elasticsearch_index'),
-                        'id'    => 'article_' . $output['article']['id'],
-                        'body'  => [
-                            'doc' => [
-                                'id'    => $output['article']['id'],
-                                'heading' => $output['article']['heading'],
-                                'preheading' => $output['article']['preheading'],
-                                'lead' => $output['article']['lead'],
-                                'category' => $output['article']['category'],
-                                'subcategory' => $output['article']['subcategory'],
-                                'image_m' => $output['article']['image_m'],
-                                // 'image_kf' => $output['article']['image_kf'],
-                                'image_ig' => $output['article']['image_ig'],
-                                // 'image_xs' => $output['article']['image_xs'],
-                                'image_t' => $output['article']['image_t'],
-                                'url' => $output['article']['url'],
-                                'time_created_real' => $output['article']['time_created_real'],
-                                'time_updated_real' => $output['article']['time_updated_real'],
-                                'time_changed' => $output['article']['time_changed'],
-                                'publish_at' => $output['article']['publish_at'],
-                                'comments' => $output['article']['comments'],
-                                'comments_count' => $output['article']['comments_count'],
-                                'has_video' => $output['article']['has_video'],
-                                'published' => $output['article']['published'],
-                            ],
-                            'doc_as_upsert' => true
-                        ]
-                    ];
-                }
-
+                        'doc_as_upsert' => true
+                    ]
+                ];
+                
                 $this->elasticsearch->update($params);
 
-                $this->info("Elasticsearch index updated successfully for article ID: $id");
+                $this->info("Elasticsearch index updated successfully for article ID = $id");
             } else {
-                $this->error("Article with ID: $id not found.");
+                $this->error("Article with ID = $id not found.");
             }
         } catch (\Exception $e) {
-            Log::error('Failed to update Elasticsearch index for article ID: ' . $id . '. Error: ' . $e->getMessage());
+            Log::error('Failed to update Elasticsearch index for article ID = ' . $id . '. Error: ' . $e->getMessage());
             $this->error("Failed to update Elasticsearch index. Check logs for details.");
         }
     }
